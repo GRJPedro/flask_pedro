@@ -10,11 +10,15 @@ from marshmallow import Schema, fields, ValidationError, validates, validate
 from psycopg2 import DataError, OperationalError
 from sqlalchemy.exc import IntegrityError, InvalidRequestError
 
+from flask_cors import CORS
+
 load_dotenv()
 
 app = Flask(__name__)
-app.config['SQLALCHEMY_DATABASE_URI'] = os.environ.get('DATABASE_URL')
 
+CORS(app)
+
+app.config['SQLALCHEMY_DATABASE_URI'] = os.environ.get('DATABASE_URL')
 db = SQLAlchemy(app)
 
 persona_bp = Blueprint('persona_bp', __name__, url_prefix='/Persona')
