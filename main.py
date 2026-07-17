@@ -81,9 +81,23 @@ class PersonaSchema(Schema):
     #es_activo = fields.Boolean()
     @validates("correo_electronico")
     def validate_correo_electronico(self, value, **kwargs):
+        # Buscamos si el correo ya existe en la base de datos
         persona = Persona.query.filter_by(correo_electronico=value).first()
+        
         if persona:
-            raise ValidationError("El correo electrónico ya está registrado.")  
+            # --- NUEVA LÓGICA DE VALIDACIÓN ---
+            # Si estamos actualizando (PUT), validamos si el correo es del mismo usuario
+            if request.method == 'PUT':
+                # Extraemos el ID directamente de la URL (/Persona/1)
+                id_en_ruta = request.view_args.get('id')
+                
+                # Si el ID de la ruta coincide con el ID de la persona dueña del correo, todo está bien
+                if id_en_ruta == persona.id:
+                    return # Salimos de la función sin lanzar el error
+            # ----------------------------------
+            
+            # Si es un POST (crear nuevo) o si el correo le pertenece a un ID diferente, bloqueamos
+            raise ValidationError("El correo electrónico ya está registrado.")
 
 persona_schema = PersonaSchema()
 
