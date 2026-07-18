@@ -37,7 +37,7 @@ class Persona(db.Model):
 
 
 class PersonaSchema(Schema):
-    #id = fields.Integer()
+    id = fields.Integer()
     nombre = fields.String(
         required=True,
         validate=[
